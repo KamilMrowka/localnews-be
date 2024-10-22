@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kamil.dev.local.news.demo.dao.dto.ArticleDTO;
 import com.kamil.dev.local.news.demo.dao.entities.ArticleEntity;
 import com.kamil.dev.local.news.demo.dao.mappers.ArticleMapper;
-import com.kamil.dev.local.news.demo.services.ArticlesService;
+import com.kamil.dev.local.news.demo.services.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Service
 public class JsonParser {
 
-    private final ArticlesService articlesService;
+    private final ArticleService articleService;
 
     public void parse() {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -37,7 +37,7 @@ public class JsonParser {
                     .map(ArticleMapper::toEntity)
                     .collect(Collectors.toList());
 
-            articlesService.saveArticles(articleList);
+            articleService.saveArticles(articleList);
 
         } catch (IOException e) {
             e.printStackTrace();

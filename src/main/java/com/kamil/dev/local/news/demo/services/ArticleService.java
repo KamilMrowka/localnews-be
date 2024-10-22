@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ArticlesService {
+public class ArticleService {
     @PersistenceContext
     private EntityManager entityManager;
     private final ArticleRepository articleRepository;
