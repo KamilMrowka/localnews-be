@@ -6,11 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +27,8 @@ public class OpenAiService {
 
 
     // returns null when response fails
-    public String getChatCompletions(String prompt) {
+    @Async
+    public CompletableFuture<String> getChatCompletions(String prompt) {
 
         Request request = null;
         try {
@@ -49,7 +52,7 @@ public class OpenAiService {
                     String responseBody = response.body().string();
                     JsonNode rootNode = mapper.readTree(responseBody);
 
-                    return rootNode.get("choices").get(0).get("message").get("content").asText();
+                    return CompletableFuture.completedFuture(rootNode.get("choices").get(0).get("message").get("content").asText());
                 } else {
                     System.out.println(response);
                 }

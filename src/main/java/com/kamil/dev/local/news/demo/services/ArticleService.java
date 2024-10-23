@@ -3,13 +3,16 @@ package com.kamil.dev.local.news.demo.services;
 
 import com.kamil.dev.local.news.demo.dao.entities.ArticleEntity;
 import com.kamil.dev.local.news.demo.dao.repositories.ArticleRepository;
+import com.kamil.dev.local.news.demo.processors.CityAssigner;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -47,4 +50,6 @@ public class ArticleService {
         entityManager.flush();
         entityManager.clear();
     }
+
+
 }

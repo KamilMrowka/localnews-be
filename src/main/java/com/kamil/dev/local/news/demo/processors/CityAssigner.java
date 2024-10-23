@@ -6,21 +6,24 @@ import com.kamil.dev.local.news.demo.dao.entities.CityEntity;
 import com.kamil.dev.local.news.demo.dao.repositories.ArticleRepository;
 import com.kamil.dev.local.news.demo.dao.repositories.CityRepository;
 import com.kamil.dev.local.news.demo.parsers.GptResponseParser;
+import com.kamil.dev.local.news.demo.services.ArticleService;
 import com.kamil.dev.local.news.demo.services.OpenAiService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
 public class CityAssigner {
     private final CityRepository cityRepository;
     private final ArticleRepository articleRepository;
-    private final OpenAiService openAiService;
     private final GptResponseParser gptResponseParser;
-
+    private final OpenAiService openAiService;
 
     public void migrateArticles(boolean onlyNew) {
         List<ArticleEntity> articles;
@@ -28,19 +31,33 @@ public class CityAssigner {
         if (onlyNew) {
             articles = articleRepository.findArticleEntitiesByCityId(null);
         } else {
-            articles = articleRepository.findFirst50ByOrderById();
-            articles.addAll(articleRepository.findTop50ByOrderByIdDesc());
+            articles = articleRepository.findAll();
         }
 
-        for (ArticleEntity article : articles) {
-            System.out.println("\n\n\n" + article.getTitle() + "\n" + article.getDescription().substring(0, 30));
-        }
-
+        List<CompletableFuture<String>> futures = new ArrayList<>();
         int batchSize = 5;
+
         // Send them in batches of size = batchSize to make sure it's reliable
         for (int i = 0; i < articles.size(); i += batchSize) {
             List<ArticleEntity> nextArticles = articles.subList(i, Math.min((i + batchSize), articles.size()));
-            String response = openAiService.getChatCompletions(generateAssigningPrompt(nextArticles));
+            String prompt = generateAssigningPrompt(nextArticles);
+            CompletableFuture<String> future = openAiService.getChatCompletions(prompt);
+            futures.add(future);
+        }
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        List<String> responses = new ArrayList<>();
+
+        for (CompletableFuture<String> future : futures) {
+            try{
+                responses.add(future.get());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        for(String response : responses) {
             executeResponse(response);
         }
     }
@@ -60,10 +77,11 @@ public class CityAssigner {
         Your job is to decide whether an article is global or local. Local means a specific city in the us, decide what city and state it belongs to.
         Some important factors to look at when deciding:
         - article is about something outside of usa -> it's global
-        - about a celebrity -> it's VERY likely global
+        - about a celebrity or a household name -> it's global unless the context suggests otherwise
         - article mentions a very precise address(street number) -> likely local
         - article is about something only relevant to specific area(if you live outside of the city it doesn't directly affect you) -> local
         - article is about something that is relevant to everyone in the us OR in the whole world -> global
+        - scale of the mentioned situation would be interesting to people from around the usa or around the world(like multiple people murdered, huge money mentioned, huge companies) -> global
         
         Additionaly:
         - use full city names as well as state names. For example: use 'New Jersey' and NOT 'NJ'
@@ -137,14 +155,11 @@ public class CityAssigner {
        return formatted;
     }
 
-    private boolean executeResponse(String response) {
+    private void executeResponse(String response) {
         List<AssigningCityDTO> parsedDTOS = gptResponseParser.parseGptResponse(response);
 
-        if (parsedDTOS == null) {
-            return false;
-        } else {
+        if (parsedDTOS != null) {
             assignCities(parsedDTOS);
-            return true;
         }
     }
 
@@ -159,12 +174,10 @@ public class CityAssigner {
                 // Also there is no valuable city and state then
                 if (dto.isGlobal()) {
                     assigning.setGlobal(true);
-                    System.out.println("Setting to global");
                     articleRepository.save(assigning);
                 } else {
                    if(correspondingCity.isPresent()) {
                       CityEntity city = correspondingCity.get();
-                       System.out.println("Assigning a local article! Title: " + assigning.getTitle() + " city: " + city.getId());
                        articleRepository.save(assigning);
                       assigning.setCityId(city.getId());
                       articleRepository.save(assigning);
