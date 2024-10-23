@@ -2,6 +2,7 @@ package com.kamil.dev.local.news.demo.controllers;
 
 import com.kamil.dev.local.news.demo.parsers.CsvParser;
 import com.kamil.dev.local.news.demo.parsers.JsonParser;
+import com.kamil.dev.local.news.demo.processors.CityAssigner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MigrationsController {
     private final JsonParser jsonParser;
     private final CsvParser csvParser;
+    private final CityAssigner cityAssigner;
 
     @GetMapping("/load-json")
     public String loadJson () {
@@ -24,5 +26,11 @@ public class MigrationsController {
     public String loadCsv () {
         csvParser.parse();
         return "Loading completed";
+    }
+
+    @GetMapping("/migrate-articles")
+    public String migrateArticles() {
+        cityAssigner.migrateArticles();
+        return "Migration succesfull";
     }
 }
