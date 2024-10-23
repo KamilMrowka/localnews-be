@@ -37,7 +37,7 @@ public class JsonParser {
                     .map(ArticleMapper::toEntity)
                     .collect(Collectors.toList());
 
-            articleService.saveArticles(articleList);
+            articleService.saveArticles(articleList, true);
 
         } catch (IOException e) {
             e.printStackTrace();

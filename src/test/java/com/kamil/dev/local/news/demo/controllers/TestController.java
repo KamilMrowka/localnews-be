@@ -1,5 +1,6 @@
 package com.kamil.dev.local.news.demo.controllers;
 
+
 import com.kamil.dev.local.news.demo.services.OpenAiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,18 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/news")
-public class NewsController {
+@RequestMapping("api/v1/test/")
+public class TestController {
 
     private final OpenAiService openAiService;
 
-    @GetMapping()
-    public String getNews() {
-        return "HI, LATEST NEWS FROM: MINESOTTA";
-    }
-
     @GetMapping("/open-ai")
-    public String getChatCompletion(@RequestParam String prompt) {
+    public String testOpenAiService(@RequestParam String prompt) {
         return openAiService.getChatCompletions(prompt);
     }
 }

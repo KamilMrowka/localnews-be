@@ -1,0 +1,30 @@
+{
+  "name": "article_response",
+  "strict": true,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "articles": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "global": {
+              "type": "boolean"
+            },
+            "city_name": {
+              "type": "string"
+            },
+            "state_name": {
+              "type": "string"
+            }
+          },
+          "required": ["global", "city_name", "state_name"],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": ["articles"],
+    "additionalProperties": false
+  }
+}

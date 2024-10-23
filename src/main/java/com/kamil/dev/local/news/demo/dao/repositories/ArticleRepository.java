@@ -4,5 +4,5 @@ import com.kamil.dev.local.news.demo.dao.entities.ArticleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
-
+    boolean existsArticleEntityByTitle(String title);
 }
