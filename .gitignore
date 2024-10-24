@@ -1,5 +1,4 @@
 HELP.md
-target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -12,6 +11,11 @@ target/
 .settings
 .springBeans
 .sts4-cache
+/target/classes
+/target/generated-sources
+/target/maven-archiver
+/target/maven-status
+/target/test-classes
 
 ### IntelliJ IDEA ###
 .idea
