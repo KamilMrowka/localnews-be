@@ -29,7 +29,7 @@ public class CityAssigner {
         List<ArticleEntity> articles;
 
         if (onlyNew) {
-            articles = articleRepository.findArticleEntitiesByCityId(null);
+            articles = articleRepository.findArticleEntitiesByCityIdAndGlobal(null, false);
         } else {
             articles = articleRepository.findAll();
         }
@@ -78,14 +78,16 @@ public class CityAssigner {
         Some important factors to look at when deciding:
         - article is about something outside of usa -> it's global
         - about a celebrity or a household name -> it's global unless the context suggests otherwise
-        - article mentions a very precise address(street number) -> likely local
         - article is about something only relevant to specific area(if you live outside of the city it doesn't directly affect you) -> local
-        - article is about something that is relevant to everyone in the us OR in the whole world -> global
+        - article is about something that is relevant to everyone in the us OR in the whole world, like some general knowledge -> global
         - scale of the mentioned situation would be interesting to people from around the usa or around the world(like multiple people murdered, huge money mentioned, huge companies) -> global
+        - if you cannot easily decide what city the article belongs to -> likely global
+        - if there's a city mentioned it doesn't necessarily mean it's local(think about the scale, relevancy outside of the city)
         
         Additionaly:
         - use full city names as well as state names. For example: use 'New Jersey' and NOT 'NJ'
         - Make sure you checked ALL articles and included them in your response
+        - if article is global but there's some particular easy to deduct us city it's most related to you can set its city_name and state_name properties
         
         Example input:
         [

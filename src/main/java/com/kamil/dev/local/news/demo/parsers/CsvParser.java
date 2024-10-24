@@ -33,8 +33,9 @@ public class CsvParser {
                 CityEntity city = new CityEntity();
                 city.setName(values.getFirst().replace("\"", ""));
                 city.setStateName(values.get(3).replace("\"", ""));
-
-                cityRepository.save(city);
+                if (!cityRepository.existsByNameAndStateName(city.getName(), city.getStateName())){
+                    cityRepository.save(city);
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -28,9 +28,16 @@ public class MigrationsController {
         return "Loading completed";
     }
 
-    @GetMapping("/migrate-articles")
+    @GetMapping("/migrate-all-articles")
     public String migrateArticles() {
         cityAssigner.migrateArticles();
         return "Migration succesfull";
     }
+
+    @GetMapping("/migrate-new-articles")
+    public String migrateNewArticles() {
+        cityAssigner.migrateArticles(true);
+        return "Migration succesfull";
+    }
+
 }
