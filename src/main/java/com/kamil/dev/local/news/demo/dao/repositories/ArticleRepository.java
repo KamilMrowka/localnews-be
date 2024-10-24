@@ -19,4 +19,8 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
 
     List<ArticleEntity> findByCityIdOrderByIdDesc(Long cityId, Pageable pageable);
 
+    int countAllByGlobal(boolean global);
+
+    int countAllByCityId(long cityId);
+
 }

@@ -18,10 +18,29 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ArticleService {
+
     @PersistenceContext
     private EntityManager entityManager;
     private final ArticleRepository articleRepository;
-    private final int PAGE_SIZE = 10;
+    private final int PAGE_SIZE = 12;
+
+    public int getLastPage () {
+       int articles =  articleRepository.countAllByGlobal(true);
+       if (articles == 0) {
+           return 0;
+       } else {
+           return (int) Math.ceil( (double) articles / PAGE_SIZE) - 1;
+       }
+    }
+
+    public int getLastPage(long cityId) {
+        int articles =  articleRepository.countAllByCityId(cityId);
+        if (articles == 0) {
+            return 0;
+        } else {
+            return (int) Math.ceil( (double) articles / PAGE_SIZE) - 1;
+        }
+    }
 
     public List<ArticleEntity> getArticles(long city_id, int page) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);

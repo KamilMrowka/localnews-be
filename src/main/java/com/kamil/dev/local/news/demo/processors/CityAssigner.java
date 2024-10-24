@@ -35,7 +35,7 @@ public class CityAssigner {
         }
 
         List<CompletableFuture<String>> futures = new ArrayList<>();
-        int batchSize = 5;
+        int batchSize = 15;
 
         // Send them in batches of size = batchSize to make sure it's reliable
         for (int i = 0; i < articles.size(); i += batchSize) {
