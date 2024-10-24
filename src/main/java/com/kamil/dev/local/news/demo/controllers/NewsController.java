@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = { "http://localhost:5173", "http://16.170.178.215:5173"})
+@CrossOrigin(origins = { "http://localhost:5173", "http://16.170.178.215:5173", "http://16.170.178.215" })
 @RequestMapping("api/v1/news")
 public class NewsController {
     private final ArticleService articleService;
