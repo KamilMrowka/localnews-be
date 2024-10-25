@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -26,10 +28,16 @@ public class JsonParser {
         try {
             // Parse JSON file into List<Person>
 
-            File file1 = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("static/1st_set.json")).getFile());
-            File file2 = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("static/2nd_set.json")).getFile());
-            List<ArticleDTO> articleDTOList = objectMapper.readValue(file1, new TypeReference<List<ArticleDTO>>() {});
-            List<ArticleDTO> secondArticleDTOList = objectMapper.readValue(file2, new TypeReference<List<ArticleDTO>>() {});
+
+            InputStream file1Stream = getClass().getClassLoader().getResourceAsStream("static/1st_set.json");
+            InputStream file2Stream = getClass().getClassLoader().getResourceAsStream("static/2nd_set.json");
+
+            if (file1Stream == null || file2Stream == null) {
+                throw new FileNotFoundException("File not found in classpath.");
+            }
+
+            List<ArticleDTO> articleDTOList = objectMapper.readValue(file1Stream, new TypeReference<List<ArticleDTO>>() {});
+            List<ArticleDTO> secondArticleDTOList = objectMapper.readValue(file2Stream, new TypeReference<List<ArticleDTO>>() {});
 
             articleDTOList.addAll(secondArticleDTOList);
 
