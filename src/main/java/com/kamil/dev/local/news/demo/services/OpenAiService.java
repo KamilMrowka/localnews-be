@@ -1,6 +1,5 @@
 package com.kamil.dev.local.news.demo.services;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +9,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -26,7 +23,6 @@ public class OpenAiService {
     private final ObjectMapper mapper = new ObjectMapper();
 
 
-    // returns null when response fails
     @Async
     public CompletableFuture<String> getChatCompletions(String prompt) {
 
@@ -34,7 +30,6 @@ public class OpenAiService {
         try {
             String jsonPayload = mapper.writeValueAsString(new RequestPayload("gpt-4o-mini", prompt));
 
-            // Build request
             request = new Request.Builder()
                     .url(API_URL)
                     .post(RequestBody.create(jsonPayload, MediaType.parse("application/json")))
@@ -67,17 +62,9 @@ public class OpenAiService {
         public String model;
         public Message[] messages;
 
-//        public Object response_format;
-//        public Map<String, Object>[] functions;
-//        public String function_call;
-
-
         public RequestPayload(String model, String prompt) throws IOException {
             this.model = model;
             this.messages = new Message[]{new Message("user", prompt)};
-//            this.response_format = new ObjectMapper().readValue(loadJsonSchema("static/request.schemas/article_response.json"), Object.class);
-//            this.functions = new Map[]{loadJsonSchemaAsMap("static/request.schemas/article_response.json")};
-//            this.function_call = "auto"; // Or specify the function name
         }
     }
 
@@ -89,27 +76,6 @@ public class OpenAiService {
             this.role = role;
             this.content = content;
         }
-    }
-
-    private static String loadJsonSchema(String filename) throws IOException {
-        InputStream inputStream = OpenAiService.class.getClassLoader().getResourceAsStream(filename);
-        if (inputStream == null) {
-            throw new IOException("File not found: " + filename);
-        }
-        String schema = new String(inputStream.readAllBytes());
-        inputStream.close();
-        return schema;
-    }
-
-    private static Map<String, Object> loadJsonSchemaAsMap(String filename) throws IOException {
-        InputStream inputStream = OpenAiService.class.getClassLoader().getResourceAsStream(filename);
-        if (inputStream == null) {
-            throw new IOException("File not found: " + filename);
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> schema = mapper.readValue(inputStream, new TypeReference<Map<String, Object>>(){});
-        inputStream.close();
-        return schema;
     }
 
 }

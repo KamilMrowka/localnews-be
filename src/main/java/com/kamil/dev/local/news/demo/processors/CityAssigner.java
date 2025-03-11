@@ -6,10 +6,8 @@ import com.kamil.dev.local.news.demo.dao.entities.CityEntity;
 import com.kamil.dev.local.news.demo.dao.repositories.ArticleRepository;
 import com.kamil.dev.local.news.demo.dao.repositories.CityRepository;
 import com.kamil.dev.local.news.demo.parsers.GptResponseParser;
-import com.kamil.dev.local.news.demo.services.ArticleService;
 import com.kamil.dev.local.news.demo.services.OpenAiService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,7 +35,6 @@ public class CityAssigner {
         List<CompletableFuture<String>> futures = new ArrayList<>();
         int batchSize = 15;
 
-        // Send them in batches of size = batchSize to make sure it's reliable
         for (int i = 0; i < articles.size(); i += batchSize) {
             List<ArticleEntity> nextArticles = articles.subList(i, Math.min((i + batchSize), articles.size()));
             String prompt = generateAssigningPrompt(nextArticles);
@@ -172,8 +169,6 @@ public class CityAssigner {
 
             if(article.isPresent()) {
                 ArticleEntity assigning = article.get();
-                // If global no need to save city and state
-                // Also there is no valuable city and state then
                 if (dto.isGlobal()) {
                     assigning.setGlobal(true);
                     articleRepository.save(assigning);

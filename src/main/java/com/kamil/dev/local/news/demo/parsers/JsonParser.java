@@ -24,9 +24,6 @@ public class JsonParser {
     public void parse() {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            // Parse JSON file into List<Person>
-
-
             InputStream file1Stream = getClass().getClassLoader().getResourceAsStream("static/1st_set.json");
             InputStream file2Stream = getClass().getClassLoader().getResourceAsStream("static/2nd_set.json");
 

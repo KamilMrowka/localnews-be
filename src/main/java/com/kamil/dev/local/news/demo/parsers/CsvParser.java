@@ -26,7 +26,6 @@ public class CsvParser {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         ) {
 
-            // skip first line with columns names
             reader.readLine();
             while((line = reader.readLine()) != null) {
                 values = Arrays.stream(line.split(",")).toList();
