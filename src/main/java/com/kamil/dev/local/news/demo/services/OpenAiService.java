@@ -1,15 +1,22 @@
 package com.kamil.dev.local.news.demo.services;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import okhttp3.*;
+import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 @Service
 @RequiredArgsConstructor
@@ -19,9 +26,12 @@ public class OpenAiService {
     private String apiKey;
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
-    private final OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient client = new OkHttpClient().newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .build();
     private final ObjectMapper mapper = new ObjectMapper();
-
 
     @Async
     public CompletableFuture<String> getChatCompletions(String prompt) {
@@ -45,14 +55,16 @@ public class OpenAiService {
             try (Response response = client.newCall(request).execute()) {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    JsonNode rootNode = mapper.readTree(responseBody);
+                    String cleanedResponseBody = responseBody.replaceAll("```json\n", "").replaceAll("\n```", "");
+                    JsonNode rootNode = mapper.readTree(cleanedResponseBody);
 
-                    return CompletableFuture.completedFuture(rootNode.get("choices").get(0).get("message").get("content").asText());
+                    return CompletableFuture
+                            .completedFuture(rootNode.get("choices").get(0).get("message").get("content").asText());
                 } else {
                     System.out.println(response);
                 }
             } catch (Exception e) {
-               e.printStackTrace();
+                e.printStackTrace();
             }
         }
         return null;
@@ -64,7 +76,7 @@ public class OpenAiService {
 
         public RequestPayload(String model, String prompt) throws IOException {
             this.model = model;
-            this.messages = new Message[]{new Message("user", prompt)};
+            this.messages = new Message[] { new Message("user", prompt) };
         }
     }
 

@@ -5,8 +5,6 @@ import com.kamil.dev.local.news.demo.services.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = { "http://localhost:5173", "http://16.170.178.215:5173", "http://16.170.178.215" })

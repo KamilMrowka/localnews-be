@@ -15,10 +15,15 @@ import org.springframework.stereotype.Component;
 public class MigrationAuthFilter implements Filter {
     private static final String MIGRATION_KEY_HEADER = "X-Migration-Key";
 
-    @Value("${MIGRATION_SECRET_KEY}")
-    private String migrationSecretKey;
+    private final String migrationSecretKey;
+
+    public MigrationAuthFilter(@Value("${MIGRATION_SECRET_KEY}") String migrationSecretKey) {
+        this.migrationSecretKey = migrationSecretKey;
+    }
+
     @Override
-    public void doFilter(jakarta.servlet.ServletRequest request, jakarta.servlet.ServletResponse response, FilterChain chain)
+    public void doFilter(jakarta.servlet.ServletRequest request, jakarta.servlet.ServletResponse response,
+            FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
@@ -46,4 +51,3 @@ public class MigrationAuthFilter implements Filter {
     public void destroy() {
     }
 }
-

@@ -39,5 +39,4 @@ public class MigrationsController {
         cityAssigner.migrateArticles(true);
         return "Migration succesfull";
     }
-
 }
