@@ -40,3 +40,9 @@ Articles are processed in batches.
 
 Everything is stored in a **PostgreSQL** database and easily accessed via `api/v1/news/local` **`GET`** endpoint.
 All endpoints except for migration endpoints are publicly accessible as they are not sensitive.
+
+## Tech Stack
+- Java
+- Spring Boot
+- PostgreSQL
+- OpenAI's API
