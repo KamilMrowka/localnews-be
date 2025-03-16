@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/news")
+@RequestMapping("news")
 public class NewsController {
     private final ArticleService articleService;
 
     @GetMapping("/local")
-    public LandingPageResponseDTO getNews(@RequestParam long city_id, @RequestParam int page) {
+    public LandingPageResponseDTO getNews(@RequestParam("city_id") long city_id, @RequestParam("page") int page) {
         LandingPageResponseDTO response = new LandingPageResponseDTO();
         response.setArticles(articleService.getArticles(city_id, page));
         response.setLastPage(articleService.getLastPage(city_id));
@@ -20,7 +20,7 @@ public class NewsController {
     }
 
     @GetMapping()
-    public LandingPageResponseDTO getGlobalNews(int page) {
+    public LandingPageResponseDTO getGlobalNews(@RequestParam("page") int page) {
         LandingPageResponseDTO response = new LandingPageResponseDTO();
         response.setArticles(articleService.getArticles(page));
         response.setLastPage(articleService.getLastPage());
