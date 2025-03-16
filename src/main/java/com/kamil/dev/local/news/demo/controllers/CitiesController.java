@@ -14,7 +14,7 @@ import java.util.List;
 public class CitiesController {
     private final CityRepository cityRepository;
     @GetMapping
-    public List<CityEntity> getCities(@RequestParam String query) {
+    public List<CityEntity> getCities(@RequestParam("query") String query) {
         return cityRepository.findByNameContainingIgnoreCase(query);
     }
 }
